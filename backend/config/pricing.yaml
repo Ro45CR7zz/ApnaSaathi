@@ -1,0 +1,30 @@
+# apnaSaathi pricing settings.
+# ALL VALUES BELOW ARE INITIAL BUSINESS ASSUMPTIONS (design assumptions A1-A3),
+# not Accel policy. They are meant to be tested with quote experiments.
+
+# List price per unit = this fraction of the way from price_min to price_max.
+# 0.5 = midpoint of the catalogue range.
+list_price_position: 0.5
+
+# "Earned savings": each weight moves the unit price from list price toward
+# the catalogue minimum. The sum is capped at 1.0 (never below price_min).
+earned_savings:
+  commit_extra_12m:
+    weight: 0.50
+    label_en: "12 extra months of commitment"
+    label_hi: "12 महीने की अतिरिक्त प्रतिबद्धता"
+  bundle_3plus:
+    weight: 0.25
+    min_distinct_products: 3
+    label_en: "Bundle of 3 or more products"
+    label_hi: "3 या अधिक प्रोडक्ट का बंडल"
+  selfserve_autopay:
+    weight: 0.25
+    label_en: "Self-serve signup with autopay"
+    label_hi: "खुद से साइनअप और ऑटोपे"
+
+# Extra months added to the contract when the commitment saving is chosen.
+commit_extra_months: 12
+
+# GST shown as a separate line (assumption A3: catalogue prices exclude GST).
+gst_rate: 0.18
