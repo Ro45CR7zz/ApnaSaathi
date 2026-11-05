@@ -14,9 +14,9 @@ One engine (Advisor → Quote → Smart KYC → Tracker) behind three front door
 | Phase | Scope | State |
 |---|---|---|
 | 4 | Data import, rules engine, pricing, GSTIN/Udyam checks, mock registry, API + tests | Done |
-| 5 | Advisor (Gemini + fallback form) + recommender | Planned |
-| 6 | Quote and checkout | Planned |
-| 7 | Smart KYC (OCR, quality gate, checks) | Planned |
+| 5 | Advisor (Gemini + rule-based fallback + form) + recommender | Done |
+| 6 | Quote and checkout + phone web app (welcome, Advisor, quote, order) | Done |
+| 7 | Smart KYC: consent, GSTIN lookup, photo quality, OCR, checks, encrypted storage; 12 samples pass | Done |
 | 8 | Tracker, back office, propensity | Planned |
 | 9 | Voice, WhatsApp-style channel, hardening | Planned |
 
@@ -33,6 +33,53 @@ uvicorn app.main:app --reload     # then open http://localhost:8000/docs
 ```
 
 macOS/Linux: use `source .venv/bin/activate` instead of the Activate.ps1 line.
+
+## Run the web app (Phase 6)
+
+One-time setup, from the `frontend` folder:
+
+```powershell
+cd frontend
+npm install
+npm run build        # builds the app into frontend/dist
+```
+
+Then start the backend as usual (`uvicorn app.main:app --reload` from `backend`) and open
+**http://localhost:8000**. The backend serves the built app and the API from one address.
+
+While changing the UI, run `npm run dev` in `frontend` and open http://localhost:5173 instead
+(it forwards `/api` calls to the backend on port 8000).
+
+Voice input works in Chrome/Edge (desktop and Android). Typing and tapping always work.
+
+## Smart KYC needs Tesseract OCR (Phase 7)
+
+Documents are read on your own machine with Tesseract (no document is sent to any AI service).
+
+- **Windows:** install Tesseract from the UB Mannheim build (github.com/UB-Mannheim/tesseract/wiki).
+  The default install path `C:\Program Files\Tesseract-OCR\tesseract.exe` is found automatically;
+  otherwise set `TESSERACT_CMD` in `.env` to the full path of `tesseract.exe`.
+- Check: `GET http://localhost:8000/api/kyc/status` should show `"ocr_available": true`.
+- Without Tesseract the app still runs, but document checks return "OCR not available" and the
+  12-sample KYC tests are skipped.
+
+Document photos are encrypted at rest with a key in `backend/.kyc_key` (created on first use, never
+committed) or `KYC_ENCRYPTION_KEY` in `.env`. Photos live in `backend/uploads/` (also not committed).
+
+Demo: on the KYC screen, "Demo: try a sample applicant" runs any of the 12 supplied specimen
+applicants (K01-K12) through the same pipeline.
+
+## Try the Advisor in the terminal (Phase 5)
+
+```powershell
+python -m app.advisor.cli          # English (uses Gemini if GEMINI_API_KEY is set in .env)
+python -m app.advisor.cli --hi     # Hindi
+python -m app.advisor.cli --rules  # force rule-based understanding (no Gemini)
+```
+
+The Gemini model is picked automatically from the models your key can use (newest "flash" text model).
+To force one, set `GEMINI_MODEL` in `.env`. Only de-identified text is sent (names, phones, GSTIN,
+Udyam, PAN, email, pincode are replaced with placeholders first).
 
 ## What Phase 4 provides
 

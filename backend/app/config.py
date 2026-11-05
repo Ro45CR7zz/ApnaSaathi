@@ -5,6 +5,15 @@ import os
 from datetime import date
 from pathlib import Path
 
+try:  # load .env from the project root or backend folder, if python-dotenv is installed
+    from dotenv import load_dotenv
+
+    _root = Path(__file__).resolve().parent.parent
+    load_dotenv(_root.parent / ".env")
+    load_dotenv(_root / ".env")
+except ImportError:  # pragma: no cover
+    pass
+
 BACKEND_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = Path(os.getenv("APNASAATHI_DATA_DIR", BACKEND_DIR / "data"))
 CONFIG_DIR = BACKEND_DIR / "config"

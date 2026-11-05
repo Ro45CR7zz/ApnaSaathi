@@ -1,0 +1,166 @@
+import type { Lang } from "./api";
+
+// Everyday words, not textbook Hindi: the words owners actually say.
+const T = {
+  by: { en: "by Accel Business", hi: "Accel Business की सेवा" },
+  callMe: { en: "Call me", hi: "कॉल करें" },
+  callRequested: { en: "An Accel expert will call you soon.", hi: "Accel के एक्सपर्ट आपको जल्द कॉल करेंगे।" },
+  steps: { en: ["Plan", "Price", "Documents", "Installation"], hi: ["प्लान", "कीमत", "डॉक्यूमेंट", "इंस्टॉलेशन"] },
+  stepOf: { en: "Step {n} of 4", hi: "4 में से कदम {n}" },
+  welcomeTitle: { en: "Internet, SIMs and business tools on one bill", hi: "इंटरनेट, सिम और बिज़नेस की सेवाएँ, एक ही बिल में" },
+  welcomeSub: { en: "Answer a few easy questions. See one clear monthly price. No sales visit needed.",
+                hi: "कुछ आसान सवालों के जवाब दें। एक साफ़ मासिक कीमत देखें। सेल्समैन के आने का इंतज़ार नहीं।" },
+  startSpeak: { en: "Speak to start", hi: "बोलकर शुरू करें" },
+  startTap: { en: "Tap to choose", hi: "चुनकर शुरू करें" },
+  sampleTitle: { en: "You will get a bill like this", hi: "आपको ऐसा बिल मिलेगा" },
+  sampleLines: { en: ["Internet", "Business SIM", "UPI billing", "CCTV camera"],
+                 hi: ["इंटरनेट", "बिज़नेस सिम", "UPI बिलिंग", "CCTV कैमरा"] },
+  sampleTotal: { en: "Every month", hi: "हर महीने" },
+  privacyLine: { en: "We don't ask for documents until you accept a quote.",
+                 hi: "कोटेशन मंज़ूर करने से पहले हम कोई डॉक्यूमेंट नहीं माँगते।" },
+  typeOrSpeak: { en: "Type or speak…", hi: "लिखें या बोलें…" },
+  listening: { en: "Listening… speak now", hi: "सुन रहा हूँ… अब बोलें" },
+  send: { en: "Send", hi: "भेजें" },
+  speakReply: { en: "Read aloud", hi: "सुनें" },
+  next: { en: "Next", hi: "आगे बढ़ें" },
+  people: { en: "people", hi: "लोग" },
+  locations: { en: "shops or locations", hi: "दुकानें या जगहें" },
+  yes: { en: "Yes, I have GST", hi: "हाँ, GST है" },
+  no: { en: "No GST", hi: "GST नहीं है" },
+  gstHelp: { en: "GSTIN is the 15-character number on your GST certificate.",
+             hi: "GSTIN 15 अक्षरों का नंबर है, जो GST सर्टिफ़िकेट पर लिखा होता है।" },
+  otherCity: { en: "Other city", hi: "दूसरा शहर" },
+  cityHint: { en: "Another city? Type or speak it below.", hi: "दूसरा शहर? नीचे लिखें या बोलें।" },
+  cityPlaceholder: { en: "Type your city", hi: "अपना शहर लिखें" },
+  otherBusiness: { en: "Something else? Type or speak it below.", hi: "कुछ और है? नीचे लिखें या बोलें।" },
+  needsDone: { en: "Show my plan", hi: "मेरा प्लान दिखाएँ" },
+  onlyInternet: { en: "Only internet", hi: "सिर्फ़ इंटरनेट" },
+  pickAny: { en: "Pick everything you need", hi: "जो-जो चाहिए, सब चुनें" },
+  yourQuote: { en: "Your quote", hi: "आपका कोटेशन" },
+  quoteFor: { en: "{business}, {city}", hi: "{business}, {city}" },
+  qtyOf: { en: "{qty} {unit} × {price}", hi: "{qty} {unit} × {price}" },
+  remove: { en: "Remove", hi: "हटाएँ" },
+  add: { en: "Add", hi: "जोड़ें" },
+  addIfNeeded: { en: "Add if you need", hi: "ज़रूरत हो तो जोड़ें" },
+  waysToSave: { en: "Ways to pay less", hi: "कम कीमत के तरीके" },
+  commit: { en: "Sign for {months} months instead of {base}", hi: "{base} की जगह {months} महीने का कॉन्ट्रैक्ट" },
+  autopay: { en: "Pay by autopay every month", hi: "हर महीने ऑटोपे से भुगतान" },
+  airfiber: { en: "No fibre at your shop? Use wireless 5G internet", hi: "दुकान पर फ़ाइबर नहीं? बिना तार वाला 5G इंटरनेट लें" },
+  savingsEarned: { en: "Savings you earned", hi: "आपकी बचत" },
+  everyMonth: { en: "Every month", hi: "हर महीने" },
+  inclGst: { en: "{sub} + {gst} GST", hi: "{sub} + {gst} GST" },
+  oneTime: { en: "One-time setup (incl. GST)", hi: "एक बार का सेटअप (GST सहित)" },
+  contract: { en: "{n}-month contract", hi: "{n} महीने का कॉन्ट्रैक्ट" },
+  notAvailable: { en: "Not in this plan", hi: "इस प्लान में नहीं" },
+  shareWhatsApp: { en: "Share on WhatsApp", hi: "WhatsApp पर भेजें" },
+  accept: { en: "Accept quote", hi: "कोटेशन मंज़ूर करें" },
+  checkoutTitle: { en: "Confirm your order", hi: "अपना ऑर्डर पक्का करें" },
+  checkoutSub: { en: "We only need a name and mobile number to contact you about this order.",
+                 hi: "ऑर्डर के बारे में संपर्क के लिए सिर्फ़ नाम और मोबाइल नंबर चाहिए।" },
+  name: { en: "Your name", hi: "आपका नाम" },
+  mobile: { en: "Mobile number", hi: "मोबाइल नंबर" },
+  consent: { en: "Accel may call or message me about this order. My number is not used for anything else.",
+             hi: "Accel इस ऑर्डर के बारे में मुझे कॉल या मैसेज कर सकता है। मेरा नंबर किसी और काम में नहीं लिया जाएगा।" },
+  placeOrder: { en: "Place order", hi: "ऑर्डर करें" },
+  back: { en: "Back", hi: "वापस" },
+  orderPlaced: { en: "Order placed", hi: "ऑर्डर हो गया" },
+  orderNo: { en: "Order number", hi: "ऑर्डर नंबर" },
+  expected: { en: "Expected to be working by", hi: "चालू होने की अनुमानित तारीख" },
+  uploadDocs: { en: "Upload documents", hi: "डॉक्यूमेंट अपलोड करें" },
+  docsSoon: { en: "Document upload opens in the next step of this prototype.", hi: "डॉक्यूमेंट अपलोड प्रोटोटाइप के अगले चरण में जुड़ेगा।" },
+  viewQuote: { en: "View quote", hi: "कोटेशन देखें" },
+  sofar: { en: "Your plan so far", hi: "अब तक का प्लान" },
+  perMonth: { en: "/month", hi: "/महीना" },
+  understood: { en: "Got it:", hi: "समझ गया:" },
+  error: { en: "Something didn't go through. Check your internet and try again.",
+           hi: "कुछ अटक गया। इंटरनेट देखें और फिर से कोशिश करें।" },
+  kycTitle: { en: "Verify your business", hi: "अपने बिज़नेस की जाँच करवाएँ" },
+  kycSub: { en: "Three short steps. Most businesses finish in a few minutes.", hi: "तीन छोटे कदम। ज़्यादातर बिज़नेस कुछ ही मिनट में पूरा कर लेते हैं।" },
+  consentTitle: { en: "Before we start", hi: "शुरू करने से पहले" },
+  consentWhat: { en: "We will read your GSTIN, Udyam number, address proof and signatory ID only to verify your business for this order.",
+                 hi: "हम आपका GSTIN, उद्यम नंबर, पते का प्रमाण और हस्ताक्षरकर्ता की ID सिर्फ़ इस ऑर्डर के लिए आपके बिज़नेस की जाँच करने के लिए पढ़ेंगे।" },
+  consentWhere: { en: "Documents are read on Accel's own servers. They are not sent to any AI service.",
+                  hi: "डॉक्यूमेंट Accel के अपने सर्वर पर पढ़े जाते हैं। इन्हें किसी AI सेवा को नहीं भेजा जाता।" },
+  consentKeep: { en: "Photos are stored encrypted and deleted {days} days after your service starts. You can delete them any time.",
+                 hi: "फ़ोटो एन्क्रिप्ट करके रखी जाती हैं और सेवा शुरू होने के {days} दिन बाद मिटा दी जाती हैं। आप इन्हें कभी भी मिटा सकते हैं।" },
+  purpose_verify_business: { en: "Check my business details with the GST and Udyam registries",
+                             hi: "मेरे बिज़नेस की जानकारी GST और उद्यम रजिस्ट्री से मिलाएँ" },
+  purpose_store_documents: { en: "Keep my document photos until my service starts",
+                             hi: "सेवा शुरू होने तक मेरे डॉक्यूमेंट की फ़ोटो रखें" },
+  agree: { en: "Agree and continue", hi: "सहमत हूँ, आगे बढ़ें" },
+  mockNote: { en: "Prototype: registry lookups use mock data, not government systems.",
+              hi: "प्रोटोटाइप: रजिस्ट्री जाँच नकली (mock) डेटा से होती है, सरकारी सिस्टम से नहीं।" },
+  gstQ: { en: "Your GST number", hi: "आपका GST नंबर" },
+  gstPlaceholder: { en: "15-character GSTIN", hi: "15 अक्षरों का GSTIN" },
+  check: { en: "Check", hi: "जाँचें" },
+  noGst: { en: "I don't have GST", hi: "मेरे पास GST नहीं है" },
+  didYouMean: { en: "Did you mean {s}?", hi: "क्या आपका मतलब {s} है?" },
+  yesThat: { en: "Yes, use this", hi: "हाँ, यही है" },
+  isThisYou: { en: "Is this your business?", hi: "क्या यह आपका बिज़नेस है?" },
+  udyamQ: { en: "Udyam number (if you have one)", hi: "उद्यम नंबर (अगर है)" },
+  save: { en: "Save", hi: "सेव करें" },
+  docsTitle: { en: "Photos of your documents", hi: "डॉक्यूमेंट की फ़ोटो" },
+  docsHint: { en: "Place the paper flat, in good light, and take the photo from straight above.",
+              hi: "कागज़ को सीधा रखें, अच्छी रोशनी में, ऊपर से फ़ोटो लें।" },
+  takePhoto: { en: "Take photo", hi: "फ़ोटो लें" },
+  retake: { en: "Retake", hi: "दोबारा लें" },
+  looksLike: { en: "Looks like this", hi: "ऐसा दिखता है" },
+  uploaded: { en: "Uploaded", hi: "अपलोड हो गया" },
+  blurry: { en: "Blurry, please retake", hi: "धुंधली है, दोबारा लें" },
+  unreadable: { en: "Couldn't read, please retake", hi: "पढ़ी नहीं गई, दोबारा लें" },
+  checkDocs: { en: "Check my documents", hi: "मेरे डॉक्यूमेंट जाँचें" },
+  checking: { en: "Checking…", hi: "जाँच हो रही है…" },
+  out_VERIFIED: { en: "Your business is verified", hi: "आपके बिज़नेस की जाँच पूरी हुई" },
+  out_NEEDS_FIX: { en: "A few things need fixing", hi: "कुछ चीज़ें ठीक करनी हैं" },
+  out_MANUAL_REVIEW: { en: "A specialist will check your documents", hi: "एक्सपर्ट आपके डॉक्यूमेंट जाँचेंगे" },
+  out_BLOCKED: { en: "We can't use this GST registration", hi: "यह GST रजिस्ट्रेशन इस्तेमाल नहीं हो सकता" },
+  outSub_VERIFIED: { en: "Installation will be scheduled next.", hi: "अब इंस्टॉलेशन तय किया जाएगा।" },
+  outSub_NEEDS_FIX: { en: "Fix the items below and check again.", hi: "नीचे दी गई चीज़ें ठीक करें और फिर से जाँचें।" },
+  outSub_MANUAL_REVIEW: { en: "Usually within one working day. We'll message you.", hi: "आमतौर पर एक कामकाजी दिन में। हम आपको मैसेज करेंगे।" },
+  outSub_BLOCKED: { en: "You can continue with products that don't need GST, or talk to us.", hi: "आप बिना GST वाले प्रोडक्ट के साथ आगे बढ़ सकते हैं, या हमसे बात करें।" },
+  whatWeChecked: { en: "What we checked", hi: "हमने क्या जाँचा" },
+  deleteDocs: { en: "Delete my documents", hi: "मेरे डॉक्यूमेंट मिटाएँ" },
+  deleted: { en: "Your documents were deleted.", hi: "आपके डॉक्यूमेंट मिटा दिए गए।" },
+  demoTitle: { en: "Demo: try a sample applicant", hi: "डेमो: सैंपल आवेदक से आज़माएँ" },
+  demoSub: { en: "Loads the specimen documents supplied with the case (synthetic data).",
+             hi: "केस के साथ दिए गए नमूना डॉक्यूमेंट लोड करता है (सिंथेटिक डेटा)।" },
+  run: { en: "Run", hi: "चलाएँ" },
+  emptyChat: { en: "Starting…", hi: "शुरू हो रहा है…" },
+} as const;
+
+export type Key = keyof typeof T;
+
+export function t(lang: Lang, key: Key, vars: Record<string, string | number> = {}): string {
+  let s = T[key][lang] as unknown as string;
+  for (const [k, v] of Object.entries(vars)) s = s.replace(`{${k}}`, String(v));
+  return s;
+}
+
+export function tl(lang: Lang, key: "steps" | "sampleLines"): readonly string[] {
+  return T[key][lang];
+}
+
+export function formatDate(iso: string, lang: Lang): string {
+  return new Date(iso + "T00:00:00").toLocaleDateString(lang === "hi" ? "hi-IN" : "en-IN",
+    { weekday: "long", day: "numeric", month: "long" });
+}
+
+const CITY_HI: Record<string, string> = {
+  Delhi: "दिल्ली", Mumbai: "मुंबई", Bengaluru: "बेंगलुरु", Hyderabad: "हैदराबाद", Chennai: "चेन्नई", Pune: "पुणे",
+  Kolkata: "कोलकाता", Vadodara: "वडोदरा", Kochi: "कोच्चि", Ahmedabad: "अहमदाबाद", Ludhiana: "लुधियाना",
+  Indore: "इंदौर", Nagpur: "नागपुर", Lucknow: "लखनऊ", Bhopal: "भोपाल", Jaipur: "जयपुर", Mysuru: "मैसूर",
+  Coimbatore: "कोयंबटूर", Nashik: "नासिक", Visakhapatnam: "विशाखापत्तनम", Patna: "पटना", Surat: "सूरत",
+};
+export const cityName = (city: string | null | undefined, lang: Lang) =>
+  !city ? "" : lang === "hi" ? CITY_HI[city] ?? city : city;
+
+export function countLabel(kind: "people" | "sites", n: number, lang: Lang): string {
+  if (lang === "hi") return kind === "people" ? `${n} लोग` : `${n} ${n === 1 ? "जगह" : "जगहें"}`;
+  return kind === "people" ? `${n} ${n === 1 ? "person" : "people"}` : `${n} location${n === 1 ? "" : "s"}`;
+}
+
+export function unitLabel(unit: string, n: number, lang: Lang): string {
+  if (lang === "hi" || n === 1) return unit;
+  if (unit === "person") return "people";
+  return unit.endsWith("s") ? unit : unit + "s";
+}
