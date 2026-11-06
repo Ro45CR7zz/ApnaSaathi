@@ -12,3 +12,8 @@ frontend/dist/
 .vscode/
 backend/.kyc_key
 backend/uploads/
+
+# extra safety
+*.log
+*.tsbuildinfo
+.kyc_key

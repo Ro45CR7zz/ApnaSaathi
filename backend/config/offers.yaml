@@ -1,0 +1,30 @@
+# Layer 3 "Profitability-Aware Offer Optimisation" - back-office suggestions only.
+# EVERY NUMBER HERE IS AN ASSUMPTION for the prototype (no cost or price-response data exists in the pack).
+# They are meant to be replaced by measured values from quote experiments (quote_events table).
+
+contribution_margin: 0.40          # assumed gross contribution on monthly revenue
+margin_floor: 0.30                 # never suggest an offer that leaves less than this
+acquisition_cost_per_attempt_inr: 300   # assumed cost of one sales follow-up (call + time)
+
+offers:
+  none:
+    label: "Standard price"
+    discount_pct: 0.0
+    uplift: 1.00
+    months: 12
+  commit_24:
+    label: "24-month commitment saving (published)"
+    discount_pct: 0.05             # approx. half the catalogue range gap, as a share of monthly price
+    uplift: 1.15                   # assumed relative increase in conversion
+    months: 24
+  autopay:
+    label: "Self-serve + autopay saving (published)"
+    discount_pct: 0.025
+    uplift: 1.05
+    months: 12
+
+assumptions_note: >
+  Illustrative assumptions (contribution margin, uplift, follow-up cost). Expected value is
+  P(convert) x uplift x monthly value x (margin - discount) x months - follow-up cost.
+  Offers are the same published savings available to every customer; the score only decides
+  which one a salesperson leads with. Replace with measured values from quote experiments.

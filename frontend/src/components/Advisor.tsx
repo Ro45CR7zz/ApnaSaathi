@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Check, FileCheck, FileX, Minus, Mic, Plus, SendHorizontal, Store, Users, Volume2 } from "lucide-react";
+import { Check, FileCheck, FileX, MessagesSquare, Minus, Mic, Plus, SendHorizontal, Store, Users, Volume2 } from "lucide-react";
 import type { AdvisorReply, Lang, Slots } from "../api";
 import { inr } from "../api";
 import { cityName, countLabel, t } from "../i18n";
@@ -10,7 +10,7 @@ export interface ChatMsg { role: "a" | "u"; text: string; summary?: string | nul
 
 type Tile = { icon: string; en: string; hi: string; value: string };
 
-const BUSINESS: Tile[] = [
+export const BUSINESS: Tile[] = [
   { icon: "store", en: "Kirana / general store", hi: "किराना / जनरल स्टोर", value: "Kirana store" },
   { icon: "scissors", en: "Salon / parlour", hi: "सैलून / पार्लर", value: "Salon" },
   { icon: "pill", en: "Pharmacy", hi: "दवा की दुकान", value: "Pharmacy" },
@@ -86,7 +86,7 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
 
   if (exp === "business_type") {
     return (
-      <div className="answer">
+      <div className="answer"><div className="answer-in">
         <div className="tiles">
           {BUSINESS.map((b) => (
             <button key={b.value} className="tile" disabled={busy} onClick={() => onForm({ business_type: b.value }, L(b))}>
@@ -95,12 +95,12 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
           ))}
         </div>
         <p className="hint">{t(lang, "otherBusiness")}</p>
-      </div>
+      </div></div>
     );
   }
   if (exp === "city") {
     return (
-      <div className="answer">
+      <div className="answer"><div className="answer-in">
         <div className="chips">
           {CITIES.map(([en, hi]) => (
             <button key={en} className="chip" disabled={busy} onClick={() => onForm({ city: en }, lang === "hi" ? hi : en)}>
@@ -109,13 +109,13 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
           ))}
         </div>
         <p className="hint">{t(lang, "cityHint")}</p>
-      </div>
+      </div></div>
     );
   }
   if (exp === "employees" || exp === "sites") {
     const isEmp = exp === "employees";
     return (
-      <div className="answer">
+      <div className="answer"><div className="answer-in">
         <Stepper value={num} setValue={setNum} label={t(lang, isEmp ? "people" : "locations")}
                  icon={isEmp ? <Users size={20} /> : <Store size={20} />} max={isEmp ? 500 : 50} />
         <div className="row-actions">
@@ -123,12 +123,12 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
                   onClick={() => onForm(isEmp ? { employees: num } : { sites: num },
                     countLabel(isEmp ? "people" : "sites", num, lang))}>{t(lang, "next")}</button>
         </div>
-      </div>
+      </div></div>
     );
   }
   if (exp === "has_gstin") {
     return (
-      <div className="answer">
+      <div className="answer"><div className="answer-in">
         <div className="yesno">
           <button className="tile" disabled={busy} onClick={() => onForm({ has_gstin: true }, t(lang, "yes"))}>
             <span className="ic"><FileCheck /></span>{t(lang, "yes")}
@@ -138,7 +138,7 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
           </button>
         </div>
         <p className="hint">{t(lang, "gstHelp")}</p>
-      </div>
+      </div></div>
     );
   }
   if (exp === "needs") {
@@ -148,7 +148,7 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
     const toggle = (v: string) => setPicked((p) => (p.includes(v) ? p.filter((x) => x !== v) : [...p, v]));
     const labels = NEEDS.filter((n) => picked.includes(n.value)).map(L).join(", ");
     return (
-      <div className="answer">
+      <div className="answer"><div className="answer-in">
         <p className="hint" style={{ marginTop: 0, marginBottom: 10 }}>{t(lang, "pickAny")}</p>
         <div className="tiles">
           {list.map((n) => (
@@ -168,15 +168,15 @@ function AnswerPanel({ reply, lang, busy, onForm, onText }:
           <button className="btn btn-secondary" disabled={busy}
                   onClick={() => onForm({ needs: ["internet"] }, t(lang, "onlyInternet"))}>{t(lang, "onlyInternet")}</button>
         </div>
-      </div>
+      </div></div>
     );
   }
   return (
-    <div className="answer">
+    <div className="answer"><div className="answer-in">
       <div className="chips">
         {reply.chips.map((c) => <button key={c.value} className="chip" disabled={busy} onClick={() => onText(c.value)}>{c.label}</button>)}
       </div>
-    </div>
+    </div></div>
   );
 }
 
@@ -201,44 +201,53 @@ export function Advisor({ lang, msgs, reply, busy, autoListen, quoteTotal, onTex
 
   return (
     <section className="chat" aria-label="apnaSaathi">
-      <div className="thread" role="log" aria-live="polite">
-        {msgs.length === 0 && <p className="typing">{t(lang, "emptyChat")}</p>}
-        {msgs.map((m, i) =>
-          m.role === "a" ? (
-            <div key={i}>
-              <div className="msg-a">
-                <button className="say" aria-label={t(lang, "speakReply")} onClick={() => speak(m.text, lang)}><Volume2 size={20} /></button>
-                <span>{m.text}</span>
-              </div>
-              {m.summary && <p className="summary">{m.summary}</p>}
-            </div>
-          ) : <div key={i} className="msg-u">{m.text}</div>
-        )}
-        {busy && <p className="typing">…</p>}
-        {reply && <Known slots={reply.slots} lang={lang} />}
+      <div className="chat-head">
+        <span className="av" aria-hidden="true"><MessagesSquare size={20} strokeWidth={2.2} /></span>
+        <span><b>apnaSaathi</b><span>{t(lang, "chatSub")}</span></span>
       </div>
-      {reply && !reply.recommendation && !reply.handoff &&
-        <AnswerPanel reply={reply} lang={lang} busy={busy} onForm={onForm} onText={onText} />}
-      <div ref={endRef} style={{ scrollMarginBottom: 150 }} aria-hidden="true" />
+      <div className="chat-scroll">
+        <div className="thread" role="log" aria-live="polite">
+          {msgs.map((m, i) =>
+            m.role === "a" ? (
+              <div key={i}>
+                <div className="msg-a">
+                  <span className="av" aria-hidden="true"><MessagesSquare size={16} strokeWidth={2.2} /></span>
+                  <div className="bubble-a">
+                    {m.text}
+                    <div><button className="say" onClick={() => speak(m.text, lang)}><Volume2 size={15} aria-hidden="true" />{t(lang, "speakReply")}</button></div>
+                  </div>
+                </div>
+                {m.summary && <p className="summary">{m.summary}</p>}
+              </div>
+            ) : <div key={i} className="msg-u">{m.text}</div>
+          )}
+          {(busy || msgs.length === 0) && <div className="typing" aria-label={t(lang, "emptyChat")}><i /><i /><i /></div>}
+          {reply && <Known slots={reply.slots} lang={lang} />}
+        </div>
+        {reply && !reply.recommendation && !reply.handoff &&
+          <AnswerPanel reply={reply} lang={lang} busy={busy} onForm={onForm} onText={onText} />}
+        <div ref={endRef} style={{ scrollMarginBottom: 150 }} aria-hidden="true" />
+      </div>
       <div className="composer">
         {quoteTotal !== null && (
           <div className="planbar">
-            <div><small>{t(lang, "sofar")}</small><b>{inr(quoteTotal)}</b>{t(lang, "perMonth")}</div>
+            <div><small>{t(lang, "sofar")}</small><b>{inr(quoteTotal)}</b><small style={{ display: "inline" }}>{t(lang, "perMonth")}</small></div>
             <button className="btn btn-primary" onClick={onViewQuote}>{t(lang, "viewQuote")}</button>
           </div>
         )}
         <form className="inner" onSubmit={submit}>
-          <label className="sr-only" htmlFor="say">{t(lang, "typeOrSpeak")}</label>
-          <input id="say" value={listening ? interim : text} onChange={(e) => setText(e.target.value)}
-                 placeholder={listening ? t(lang, "listening") : t(lang, "typeOrSpeak")} autoComplete="off" disabled={busy} />
-          {text.trim() ? (
-            <button className="send" type="submit" aria-label={t(lang, "send")} disabled={busy}><SendHorizontal /></button>
-          ) : speechSupported() ? (
+          <div className="dock">
+            <label className="sr-only" htmlFor="say">{t(lang, "typeOrSpeak")}</label>
+            <input id="say" value={listening ? interim : text} onChange={(e) => setText(e.target.value)}
+                   placeholder={listening ? t(lang, "listening") : t(lang, "typeOrSpeak")} autoComplete="off" disabled={busy} />
+            <button className="send" type="submit" aria-label={t(lang, "send")} disabled={busy || !text.trim()}><SendHorizontal size={18} /></button>
+          </div>
+          {speechSupported() && (
             <button type="button" className={`mic ${listening ? "on" : ""}`} aria-pressed={listening}
                     aria-label={listening ? t(lang, "listening") : t(lang, "typeOrSpeak")} onClick={() => (listening ? stop() : start())} disabled={busy}>
-              <Mic size={28} />
+              <Mic size={24} />
             </button>
-          ) : null}
+          )}
         </form>
       </div>
     </section>

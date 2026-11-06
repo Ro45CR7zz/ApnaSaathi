@@ -136,6 +136,8 @@ def accept(quote_id: str, contact: Contact, today: Optional[date] = None) -> Ord
                     (order_id, "KYC_PENDING", None, _now()))
     q.status, q.order_id = "accepted", order_id
     quotes._save(q)
+    from app.orders import tracker  # local import: tracker imports this module's tables
+    tracker.notify(order_id, "placed", q.language if q.language in ("en", "hi") else "en", id=order_id)
     quotes.log_event(q, "accepted", {"order_id": order_id}, v.priced)
     return get(order_id)
 

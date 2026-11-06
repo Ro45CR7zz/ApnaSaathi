@@ -13,6 +13,8 @@ from app.kyc.imaging import BadUpload
 from app.kyc.ocr import OcrUnavailable, available as ocr_available
 from app.orders import service as orders
 
+MAX_UPLOAD = 8 * 1024 * 1024
+
 router = APIRouter(prefix="/api/kyc", tags=["kyc"])
 
 
@@ -94,7 +96,11 @@ def udyam(case_id: str, req: UdyamReq):
 
 @router.post("/cases/{case_id}/documents/{doc_type}", response_model=kyc.CaseView)
 async def upload(case_id: str, doc_type: str, file: UploadFile = File(...)):
-    data = await file.read()
+    data = await file.read(MAX_UPLOAD + 1)
+    if len(data) > MAX_UPLOAD:
+        raise HTTPException(413, "Photo is too large (max 8 MB).")
+    if not data:
+        raise HTTPException(422, "Empty file.")
     return kyc.view(_guard(kyc.upload, _case(case_id), doc_type, data))
 
 

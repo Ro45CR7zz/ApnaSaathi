@@ -9,6 +9,26 @@ One engine (Advisor → Quote → Smart KYC → Tracker) behind three front door
 > All data is synthetic. GSTIN/Udyam lookups are **MOCK** lookups against the supplied CSVs,
 > not government systems. See `docs/DESIGN.md` for the full design and assumptions.
 
+![Architecture](docs/architecture.png)
+
+## Submission material
+
+| Item | Where |
+|---|---|
+| Demo video (3 min) | _add link_ |
+| Architecture diagram (components and data flows) | [`docs/architecture.png`](docs/architecture.png) |
+| Data privacy and security note (1 page) | [`docs/PRIVACY.md`](docs/PRIVACY.md) |
+| Design spec and assumptions | [`docs/DESIGN.md`](docs/DESIGN.md) |
+| Business case (7 slides) | submitted on the hackathon portal (PDF + PPTX) |
+
+## Quick start (about 5 minutes)
+
+1. Python 3.10+, Node 20+, and [Tesseract OCR](#smart-kyc-needs-tesseract-ocr-phase-7) for document reading.
+2. `cp .env.example .env` and add a Gemini API key (optional: without it the Advisor uses its rule-based mode).
+3. Backend: see [Run the backend](#run-the-backend-windows-powershell). Frontend: `cd frontend && npm install && npm run build`.
+4. Open http://localhost:8000. Back office: http://localhost:8000/#/ops (token `accel-demo-ops`).
+   WhatsApp simulator: http://localhost:8000/#/whatsapp.
+
 ## Status
 
 | Phase | Scope | State |
@@ -17,8 +37,9 @@ One engine (Advisor → Quote → Smart KYC → Tracker) behind three front door
 | 5 | Advisor (Gemini + rule-based fallback + form) + recommender | Done |
 | 6 | Quote and checkout + phone web app (welcome, Advisor, quote, order) | Done |
 | 7 | Smart KYC: consent, GSTIN lookup, photo quality, OCR, checks, encrypted storage; 12 samples pass | Done |
-| 8 | Tracker, back office, propensity | Planned |
-| 9 | Voice, WhatsApp-style channel, hardening | Planned |
+| 8 | Tracker (timeline, pending actions, simulated install events, updates) + back office (lead scores, KYC review, call requests, orders, funnel) | Done |
+| 9 | Messaging channel (WhatsApp-ready webhook + simulator), quote links, hardening, end-to-end test | Done |
+| UI | Redesign: Plus Jakarta Sans + Inter (Noto Sans Devanagari for Hindi), desktop split view, new KYC and tracker layouts | Done |
 
 ## Run the backend (Windows PowerShell)
 
@@ -68,6 +89,32 @@ committed) or `KYC_ENCRYPTION_KEY` in `.env`. Photos live in `backend/uploads/` 
 
 Demo: on the KYC screen, "Demo: try a sample applicant" runs any of the 12 supplied specimen
 applicants (K01-K12) through the same pipeline.
+
+## Tracker and back office (Phase 8)
+
+- Customer tracker: after placing an order, "Track my order" (or open `http://localhost:8000/#/track/<order id>`).
+  Payment and installation events are **simulated** in this prototype.
+- Back office: `http://localhost:8000/#/ops`, token `accel-demo-ops` (change with `OPS_TOKEN` in `.env`).
+  Tabs: leads to call (ranked by lead score, with next best action and offer suggestion), KYC review
+  (approve / ask to fix / reject, every document view audited), call requests, orders (simulate the next
+  step, a 3-day delay, fibre not feasible, payment failure) and the funnel.
+- Lead score: gradient boosting on profile and source fields only; 5-fold cross-validated AUC about 0.67.
+  Calling the top 30% of scored leads finds about 51% of activations (out-of-fold).
+- Offer suggestions use labelled assumptions in `backend/config/offers.yaml`.
+
+## Messaging channel and hardening (Phase 9)
+
+- Simulator: open `http://localhost:8000/#/whatsapp`. It talks to the same webhook a real number would use
+  (`POST /api/channels/whatsapp`). When the Advisor has a plan, the reply carries the price summary and a link
+  `#/q/<quote id>` that opens the quote in the web app to change it and order.
+- Real WhatsApp (optional, not needed for the demo): point a Twilio WhatsApp sandbox "When a message comes in"
+  webhook at `https://<public address>/api/channels/whatsapp` and set `PUBLIC_BASE_URL` in `.env` so quote links
+  point to that address. Phone numbers are never stored, only a salted hash (`CHANNEL_HASH_SALT`).
+- Hardening: security headers (CSP, no framing, no sniffing), no caching of API responses, an 8 MB request
+  and photo cap, and per-IP rate limits on chat, KYC, quote and webhook calls (turn off with
+  `APNASAATHI_RATE_LIMIT=0`). In production these sit in the API gateway.
+- `tests/test_channel_e2e.py` runs one full journey through the API: chat → quote → change → order →
+  KYC sample → payment → installation → ACTIVE.
 
 ## Try the Advisor in the terminal (Phase 5)
 

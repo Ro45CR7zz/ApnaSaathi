@@ -57,15 +57,33 @@ export interface GstinResult { status: "ok" | "confirm" | "invalid" | "not_found
   suggestion: string | null; case: KycCase | null }
 export interface Sample { id: string; business: string; city: string; documents: string[] }
 
+export interface TrackerStep { key: string; label: string; status: "done" | "current" | "upcoming" | "attention"; date: string | null }
+export interface TrackerLine { product_id: string; product_name: string; plain: string; icon: string; qty: number;
+  monthly_inr: number; state: string; expected_ready: string; note: string | null }
+export interface PendingAction { kind: string; text: string; amount_inr: number | null }
+export interface Tracker {
+  order_id: string; state: string; language: Lang; business: string; city: string | null; steps: TrackerStep[];
+  lines: TrackerLine[]; pending: PendingAction[]; expected_activation: string;
+  notifications: { text: string; at: string; channel: string }[];
+  bill: { monthly_total_inr: number; one_time_total_inr: number; first_payment_inr: number; contract_months: number; next_bill_date: string | null };
+  simulated: boolean;
+}
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
 
+let opsToken: string | null = null;
+export const setOpsToken = (t: string | null) => { opsToken = t; };
+
 async function call<T>(method: string, path: string, body?: unknown): Promise<T> {
   const isForm = body instanceof FormData;
+  const headers: Record<string, string> = {};
+  if (body && !isForm) headers["Content-Type"] = "application/json";
+  if (opsToken && path.startsWith("/ops")) headers["X-Ops-Token"] = opsToken;
   const res = await fetch(`/api${path}`, {
     method,
-    headers: body && !isForm ? { "Content-Type": "application/json" } : undefined,
+    headers,
     body: body ? (isForm ? (body as FormData) : JSON.stringify(body)) : undefined,
   });
   if (!res.ok) {
@@ -109,6 +127,18 @@ export const api = {
   kycWithdraw: (id: string) => call<KycCase>("DELETE", `/kyc/cases/${id}/documents`),
   kycSamples: () => call<Sample[]>("GET", "/kyc/samples"),
   kycUseSample: (id: string, kid: string) => call<KycCase>("POST", `/kyc/cases/${id}/use-sample/${kid}`),
+  tracker: (id: string) => call<Tracker>("GET", `/orders/${id}/tracker`),
+  pay: (id: string) => call<Tracker>("POST", `/orders/${id}/pay`),
+  switchAirfiber: (id: string) => call<Tracker>("POST", `/orders/${id}/switch-airfiber`),
+  channelMessage: (from: string, text: string, language: Lang) =>
+    call<{ reply: string; quick_replies: string[]; session_id: string; quote_id: string | null; quote_link: string | null }>(
+      "POST", "/channels/whatsapp", { from, text, language }),
+  ops: <T,>(path: string, method = "GET", body?: unknown) => call<T>(method, `/ops${path}`, body),
+  opsBlob: async (path: string) => {
+    const res = await fetch(`/api/ops${path}`, { headers: opsToken ? { "X-Ops-Token": opsToken } : {} });
+    if (!res.ok) throw new ApiError(res.status, res.statusText);
+    return URL.createObjectURL(await res.blob());
+  },
 };
 
 const inrFmt = new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 });

@@ -16,6 +16,30 @@ const T = {
   sampleLines: { en: ["Internet", "Business SIM", "UPI billing", "CCTV camera"],
                  hi: ["इंटरनेट", "बिज़नेस सिम", "UPI बिलिंग", "CCTV कैमरा"] },
   sampleTotal: { en: "Every month", hi: "हर महीने" },
+  voiceTitle: { en: "Prefer to speak?", hi: "बोलना आसान लगता है?" },
+  voiceSub: { en: "Tell us about your business in Hindi or English.", hi: "हिंदी या इंग्लिश में अपने बिज़नेस के बारे में बताइए।" },
+  pickBusiness: { en: "Or tap your business", hi: "या अपना बिज़नेस चुनें" },
+  pickBusinessSub: { en: "Takes about 2 minutes", hi: "लगभग 2 मिनट लगेंगे" },
+  otherStart: { en: "Something else? Type it in your own words", hi: "कुछ और है? अपने शब्दों में लिखें" },
+  exampleTitle: { en: "One bill, everything in it", hi: "एक बिल, सब कुछ उसमें" },
+  example: { en: "Example", hi: "उदाहरण" },
+  exampleWho: { en: "Kirana store, Jaipur. 3 people. 12-month contract.", hi: "किराना दुकान, जयपुर। 3 लोग। 12 महीने का कॉन्ट्रैक्ट।" },
+  exampleLines: { en: ["Wired internet for your shop", "CCTV cameras × 2", "Billing with UPI and card"],
+                  hi: ["दुकान के लिए तार वाला इंटरनेट", "CCTV कैमरा × 2", "UPI और कार्ड से बिलिंग"] },
+  promises: { en: ["No documents until you accept a quote", "The same price for every business, shown upfront", "Speak or type, in Hindi or English"],
+              hi: ["कोटेशन मंज़ूर करने से पहले कोई डॉक्यूमेंट नहीं", "हर बिज़नेस के लिए एक ही कीमत, पहले से साफ़", "बोलें या लिखें, हिंदी या इंग्लिश में"] },
+  chatSub: { en: "Accel Business advisor, Hindi or English", hi: "Accel Business सलाहकार, हिंदी या इंग्लिश" },
+  billEmptyTitle: { en: "Your quote", hi: "आपका कोटेशन" },
+  billEmptySub: { en: "It builds here as you answer. No documents needed yet.", hi: "आपके जवाबों के साथ यहाँ बनता जाएगा। अभी कोई डॉक्यूमेंट नहीं चाहिए।" },
+  checkoutPay: { en: "You pay every month", hi: "हर महीने का भुगतान" },
+  privacyTitle: { en: "How we handle your documents", hi: "आपके डॉक्यूमेंट कैसे संभाले जाते हैं" },
+  privacyRead: { en: "Read on Accel's own servers, never sent to an AI service", hi: "Accel के अपने सर्वर पर पढ़े जाते हैं, किसी AI सेवा को नहीं भेजे जाते" },
+  privacyEnc: { en: "Stored encrypted; every view by staff is recorded", hi: "एन्क्रिप्ट करके रखे जाते हैं; स्टाफ़ का हर व्यू दर्ज होता है" },
+  privacyDel: { en: "Deleted {days} days after your service starts", hi: "सेवा शुरू होने के {days} दिन बाद मिटा दिए जाते हैं" },
+  stepGstSub: { en: "We fill in your business details from the registry.", hi: "रजिस्ट्री से आपके बिज़नेस की जानकारी भर देते हैं।" },
+  stepDocsSub: { en: "Four photos. We check them for blur and read them for you.", hi: "चार फ़ोटो। हम धुंधलापन जाँचते हैं और उन्हें आपके लिए पढ़ते हैं।" },
+  orderLabel: { en: "Order", hi: "ऑर्डर" },
+  monthly: { en: "Every month", hi: "हर महीने" },
   privacyLine: { en: "We don't ask for documents until you accept a quote.",
                  hi: "कोटेशन मंज़ूर करने से पहले हम कोई डॉक्यूमेंट नहीं माँगते।" },
   typeOrSpeak: { en: "Type or speak…", hi: "लिखें या बोलें…" },
@@ -125,6 +149,25 @@ const T = {
   demoSub: { en: "Loads the specimen documents supplied with the case (synthetic data).",
              hi: "केस के साथ दिए गए नमूना डॉक्यूमेंट लोड करता है (सिंथेटिक डेटा)।" },
   run: { en: "Run", hi: "चलाएँ" },
+  trackTitle: { en: "Your order", hi: "आपका ऑर्डर" },
+  trackOrder: { en: "Track my order", hi: "मेरा ऑर्डर देखें" },
+  readyBy: { en: "Everything working by", hi: "सब चालू होने की तारीख" },
+  todo: { en: "What you need to do", hi: "आपको क्या करना है" },
+  nothingTodo: { en: "Nothing to do right now. We'll message you at every step.", hi: "अभी कुछ करने की ज़रूरत नहीं। हर कदम पर हम आपको मैसेज करेंगे।" },
+  payNow: { en: "Pay {amt}", hi: "{amt} भरें" },
+  payDemo: { en: "Prototype: payment is simulated, no money moves.", hi: "प्रोटोटाइप: पेमेंट नकली है, कोई पैसा नहीं कटता।" },
+  fixDocs: { en: "Fix documents", hi: "डॉक्यूमेंट ठीक करें" },
+  uploadNow: { en: "Upload documents", hi: "डॉक्यूमेंट अपलोड करें" },
+  switchNow: { en: "Switch to wireless 5G", hi: "5G इंटरनेट पर बदलें" },
+  services: { en: "Your services", hi: "आपकी सेवाएँ" },
+  updates: { en: "Updates sent to you", hi: "आपको भेजे गए अपडेट" },
+  yourBill: { en: "Your bill", hi: "आपका बिल" },
+  nextBill: { en: "Next bill", hi: "अगला बिल" },
+  refresh: { en: "Refresh", hi: "रीफ़्रेश" },
+  st_WAITING: { en: "Waiting", hi: "इंतज़ार" }, st_SCHEDULED: { en: "Scheduled", hi: "तय" },
+  st_INSTALL_VISIT: { en: "Technician visit booked", hi: "टेक्नीशियन आएँगे" }, st_INSTALLED: { en: "Installed", hi: "लग गया" },
+  st_ACTIVE: { en: "Working", hi: "चालू" }, st_CANCELLED: { en: "Removed", hi: "हटाया गया" },
+  st_FEASIBILITY_FAILED: { en: "Fibre not possible here", hi: "यहाँ फ़ाइबर संभव नहीं" },
   emptyChat: { en: "Starting…", hi: "शुरू हो रहा है…" },
 } as const;
 
@@ -136,7 +179,7 @@ export function t(lang: Lang, key: Key, vars: Record<string, string | number> = 
   return s;
 }
 
-export function tl(lang: Lang, key: "steps" | "sampleLines"): readonly string[] {
+export function tl(lang: Lang, key: "steps" | "sampleLines" | "exampleLines" | "promises"): readonly string[] {
   return T[key][lang];
 }
 

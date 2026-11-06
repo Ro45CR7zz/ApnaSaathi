@@ -271,10 +271,16 @@ def run_evaluation(c: CaseState) -> CaseState:
 
 
 def _update_order(order_id: str, state: str, note: str) -> None:
+    from app.orders import tracker
     with sqlite3.connect(config.DB_PATH) as con:
+        row = con.execute("SELECT state, language FROM orders WHERE id=?", (order_id,)).fetchone()
+        if not row or row[0] in ("CONFIRMED", "FULFILLING", "ON_HOLD", "ACTIVE"):
+            return  # KYC re-runs never move an order backwards once paid
         con.execute("UPDATE orders SET state=?, updated_at=? WHERE id=?", (state, _now(), order_id))
         con.execute("INSERT INTO order_events (order_id, state, note, at) VALUES (?,?,?,?)",
                     (order_id, state, note, _now()))
+    if row[0] != state:
+        tracker.notify(order_id, state, row[1] if row[1] in ("en", "hi") else "en")
 
 
 def delete_documents(c: CaseState, reason: str = "consent_withdrawn", actor: str = "customer") -> CaseState:

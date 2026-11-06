@@ -1,6 +1,6 @@
 import {
   Activity, Briefcase, Building2, Cable, Cctv, Factory, Globe, HardDrive, LifeBuoy, Mail, MessageCircle,
-  MessageSquareText, Network, Package, Phone, PhoneCall, Pill, Pin, QrCode, RadioTower, Router, Scissors,
+  MessageSquareText, Network, Package, Phone, PhoneCall, Pill, Pin, QrCode, RotateCcw, Send, RadioTower, Router, Scissors,
   Shield, ShieldCheck, Smartphone, Stethoscope, Store, Truck, UtensilsCrossed, Wifi, type LucideIcon,
 } from "lucide-react";
 
@@ -11,7 +11,7 @@ const MAP: Record<string, LucideIcon> = {
   "message-circle": MessageCircle, mail: Mail, "hard-drive": HardDrive, globe: Globe, "qr-code": QrCode,
   "shield-check": ShieldCheck, shield: Shield, wifi: Wifi, cctv: Cctv, activity: Activity, truck: Truck,
   store: Store, scissors: Scissors, pill: Pill, stethoscope: Stethoscope, utensils: UtensilsCrossed,
-  briefcase: Briefcase, factory: Factory, building: Building2,
+  briefcase: Briefcase, factory: Factory, building: Building2, "rotate-ccw": RotateCcw, send: Send,
 };
 
 export function Icon({ name, size = 22 }: { name: string; size?: number }) {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { CircleAlert, CircleCheck, Minus, Plus, Share2, Sparkles } from "lucide-react";
+import { ArrowRight, CircleAlert, CircleCheck, Minus, Plus, Share2, Sparkles } from "lucide-react";
 import type { Lang, Quote, QuoteChange } from "../api";
 import { inr } from "../api";
 import { cityName, t, unitLabel } from "../i18n";
@@ -23,8 +23,11 @@ export function Bill({ lang, quote, busy, onChange, onShare, onAccept }: {
 
   return (
     <article className={`bill ${printing ? "printing" : ""}`} aria-label={t(lang, "yourQuote")}>
-      <h2>{t(lang, "yourQuote")}</h2>
-      <p className="who">{where}. {t(lang, "contract", { n: p.contract_months })}.</p>
+      <div className="bill-top">
+        <h2>{t(lang, "yourQuote")}</h2>
+        <span className="pill red">{t(lang, "contract", { n: p.contract_months })}</span>
+      </div>
+      <p className="who">{where}</p>
 
       {quote.lines.map((l) => (
         <div className="line" key={l.product_id}>
@@ -53,12 +56,13 @@ export function Bill({ lang, quote, busy, onChange, onShare, onAccept }: {
       ))}
 
       {quote.notices.map((n) => (
-        <div className="callout amber" key={n}><CircleAlert size={18} />{n}</div>
+        <div className="note amber" key={n}><CircleAlert size={18} />{n}</div>
       ))}
 
       {open && quote.addons.length > 0 && (
         <>
           <h3 className="sect">{t(lang, "addIfNeeded")}</h3>
+          <div className="addons">
           {quote.addons.map((a) => (
             <div className="addon" key={a.product_id}>
               <span className="ic"><Icon name={a.icon} size={20} /></span>
@@ -66,6 +70,7 @@ export function Bill({ lang, quote, busy, onChange, onShare, onAccept }: {
               <button className="addbtn" disabled={busy} onClick={() => onChange({ add: a.product_id })}><Plus size={16} />{t(lang, "add")}</button>
             </div>
           ))}
+          </div>
         </>
       )}
 
@@ -107,7 +112,7 @@ export function Bill({ lang, quote, busy, onChange, onShare, onAccept }: {
       )}
 
       <div className={`total ${bump ? "bump" : ""}`}>
-        <div className="big"><span>{t(lang, "everyMonth")}</span><b aria-live="polite">{inr(p.monthly_total_inr)}</b></div>
+        <div className="big"><span>{t(lang, "everyMonth")}</span><b aria-live="polite">{inr(p.monthly_total_inr)}<small>{t(lang, "perMonth")}</small></b></div>
         <div className="sub"><span>{t(lang, "inclGst", { sub: inr(p.monthly_subtotal_inr), gst: inr(p.monthly_gst_inr) })}</span></div>
         <div className="sub strong"><span>{t(lang, "oneTime")}</span><span>{inr(p.one_time_total_inr)}</span></div>
       </div>
@@ -116,16 +121,16 @@ export function Bill({ lang, quote, busy, onChange, onShare, onAccept }: {
         <>
           <h3 className="sect">{t(lang, "notAvailable")}</h3>
           {quote.excluded.map((e) => (
-            <div className="callout amber" key={e.product_id}><CircleAlert size={18} />{e.message}</div>
+            <div className="note amber" key={e.product_id}><CircleAlert size={18} />{e.message}</div>
           ))}
         </>
       )}
-      {quote.status === "accepted" && <div className="callout green"><CircleCheck size={18} />{t(lang, "orderPlaced")}: {quote.order_id}</div>}
+      {quote.status === "accepted" && <div className="note green"><CircleCheck size={18} />{t(lang, "orderPlaced")}: {quote.order_id}</div>}
 
       {open && (
         <div className="billactions">
-          <button className="btn btn-primary btn-block" disabled={busy} onClick={onAccept}>{t(lang, "accept")}</button>
-          <button className="btn btn-secondary btn-block" disabled={busy} onClick={onShare}><Share2 size={20} aria-hidden="true" />{t(lang, "shareWhatsApp")}</button>
+          <button className="btn btn-primary btn-block btn-lg" disabled={busy} onClick={onAccept}>{t(lang, "accept")}<ArrowRight size={18} aria-hidden="true" /></button>
+          <button className="btn btn-secondary btn-block btn-lg" disabled={busy} onClick={onShare}><Share2 size={20} aria-hidden="true" />{t(lang, "shareWhatsApp")}</button>
         </div>
       )}
     </article>

@@ -12,3 +12,4 @@ cryptography>=42
 pillow>=10
 numpy>=1.26
 python-multipart>=0.0.9
+scikit-learn>=1.4
